@@ -1,4 +1,5 @@
-*** IoT-Handschuh - Steuersignale und Feedback durch Vibration ***
+*** IoT- Glove ***
+Handschuh Steuersignale und Feedback durch Vibration
 
 Stichworte: Riot, CoAP, 6LoWPAN, python, aiocoap, microcoap, OSC
 
