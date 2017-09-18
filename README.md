@@ -1,13 +1,16 @@
 IoT-Glove
 -------------------------------------------------------------------------------
-Glove to send and receive signals via a gateway
+Glove to send and receive signals via a gateway.
+
 
 This code is meant for students that need a working example of how to implement CoAP on a node that uses Riot. I can not garanty that this code is up to date or the best way to do it.
 
 Tags: RIOT-OS, CoAP, OSC, 6LoWPAN, raspberrypi, python3, c++, aiocoap, microcoap
 
-Autor: Sebastian Wilkes 
+Autor: Sebastian Wilkes
+
 Project: AudioGames, HAW Hamburg
+
 Semester: SS 2016
 
 **Description:**
