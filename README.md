@@ -1,14 +1,13 @@
 *** IoT-Glove ***
 Glove to send and receive signals via a gateway
 
-This code is meant for students that need a working example of how to implement CoAP on a node that uses Riot
+This code is meant for students that need a working example of how to implement CoAP on a node that uses Riot. I can not garanty that this code is up to date or the best way to do it.
 
 Tags: RIOT-OS, CoAP, OSC, 6LoWPAN, raspberrypi, python3, c++, aiocoap, microcoap
 
+Autor: Sebastian Wilkes 
 Project: AudioGames, HAW Hamburg
 Semester: SS 2016
-
-Autor: Sebastian Wilkes 
 -------------------------------------------------------------------------------
 **Beschreibung:**
 
@@ -22,6 +21,10 @@ Within the AudioGames project in 2016 there was the need to make the player feel
 **Further information:**
 
 - CoAP: http://coap.technology/
+- RIOT: https://github.com/RIOT-OS/RIOT/wiki
+- Instruction to install Raspian und WPAN: https://github.com/RIOT-Makers/wpan-raspbian
+- Ping Pong example between RasPi and RIOT: https://github.com/smartuni/examples
+- CoAP example using RIOT: https://github.com/smartuni/GirlsDay2016
 
 ![Gloves:](./doku/datenhandschuh.jpg)
 
