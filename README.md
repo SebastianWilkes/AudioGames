@@ -1,43 +1,28 @@
-*** IoT- Glove ***
-Handschuh Steuersignale und Feedback durch Vibration
+*** IoT-Glove ***
+Glove to send and receive signals via a gateway
 
-Stichworte: Riot, CoAP, 6LoWPAN, python, aiocoap, microcoap, OSC
+This code is meant for students that need a working example of how to implement CoAP on a node that uses Riot
 
-Projekt: AudioGames
+Tags: RIOT-OS, CoAP, OSC, 6LoWPAN, raspberrypi, python3, c++, aiocoap, microcoap
+
+Project: AudioGames, HAW Hamburg
 Semester: SS 2016
 
 Autor: Sebastian Wilkes 
 -------------------------------------------------------------------------------
 **Beschreibung:**
 
-Um in einem Spielszenaio im Rahmen des Projekt "AudioGames" den Zusammenstoß mit einem virtuellen Objekt realistischer zu gestalten, wurden Handschuhe entwickelt durch die der Spieler im Falle eines Aufpralls eine Vibration spürt. Ausserdem wurden Taster an den Handschuh angebracht mit denen der Spieler Steuerbefehle absenden kann.
+Within the AudioGames project in 2016 there was the need to make the player feel a crash with a virtual object. Another requirement was to be able to send signals via buttons. So I developed gloves with buttons and vibration modules that are able to communicate with a raspberrypi gateway using the CoAP Protocoll over the wireless 802.15.4 Network (6LowPAN). The raspberrypi should also be connected to the LAN and receives and sends data via the OSC-Protocoll (in this case). On the sensor nodes I used RIOT-OS which made it fun to use all sorts of libraries and made hardware access very easy. Thanks to the RIOT team in hamburg for their help!
 
-![Szenario: Aufprall](./doku/SzenarioAufprall.png)
+![Crash Scenario](./doku/SzenarioAufprall.png)
 
-**Anforderungen:**
+![Communication](./doku/Kommunikationsmodell.png)
 
-- Annahme des Vibrationsbefehls via RaspberryPi
 
-- Weiterleitung des Befehls an die Mikrocontroller
-
-- Verarbeitung des Befehls durch den Mikrocontroller
-
-- Ausloesen der Vibration
-
-- Steuerbefehle senden
-
-**Kommunikation:**
-
-- Die Kommunikation zwischen dem RaspberryPi und den Mikrocontrollern erfolgt via CoAP.
-
-- Die Kommunikation zwischen RaspberryPi und der WFS-Anlage erfolgt via OSC-Commands.
-
-![Kommunikationsmodell](./doku/Kommunikationsmodell.png)
-
-**Weiterfuehrende Informationen:**
+**Further information:**
 
 - CoAP: http://coap.technology/
 
-![Datenhandschuh:](./doku/datenhandschuh.jpg)
+![Gloves:](./doku/datenhandschuh.jpg)
 
 
