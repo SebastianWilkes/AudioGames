@@ -10,12 +10,18 @@
  * @}
  */
 
+
+
 // standard
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+
+#include "thread.h"
+
+
 // riot
 #include "board.h"
 #include <net/af.h>
@@ -24,8 +30,21 @@
 #include "net/gnrc/netif.h"
 #include "net/gnrc/udp.h"
 #include "net/gnrc/ipv6.h"
-#include "net/conn.h"
-#include "net/conn/udp.h"
+
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "net/gnrc/pktdump.h"
+#include "timex.h"
+#include "xtimer.h"
+
+#include "net/uhcp.h"
+#include "board.h"
+#include "saul/periph.h"
+
 #include "periph/gpio.h"
 #include "shell.h"
 #include "coap.h"
@@ -110,6 +129,8 @@ long long current_timestamp_ms(void) {
  */
 static void cb(void *arg)
 {
+        puts("callback");
+
         current_time = current_timestamp_ms();
         if((current_time - old_time) > debounce_delay){
                 int buflen = sizeof("{\"type\":\"button\",\"id\":}") + sizeof(USAGE);
@@ -162,7 +183,7 @@ int main(void)
     vibrate_pid = vibrate_start_thread();
 
 	 // init onboard button
-	 gpio_init_int(BUTTON_GPIO, GPIO_IN_PU, GPIO_FALLING, cb, NULL);
+	 gpio_init_int(BTN0_PIN, GPIO_IN_PU, GPIO_FALLING, cb, NULL);
 
 	 // init external button
 	 gpio_init_int(GPIO_PIN(BTN_PORT, BTN_PIN), GPIO_IN_PU, GPIO_FALLING, cb, NULL);

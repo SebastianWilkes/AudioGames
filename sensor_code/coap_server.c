@@ -10,22 +10,21 @@
  * @}
  */
 
-// standard
+//#include "net/gnrc/udp.h"
+//#include "net/gnrc/ipv6.h"
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// network
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "net/gnrc/netapi.h"
-#include "net/gnrc/netif.h"
-#include "net/gnrc/udp.h"
-#include "net/gnrc/ipv6.h"
-#include "net/conn.h"
-#include "net/conn/udp.h"
+
+#include "thread.h"
+
 // riot
 #include "board.h"
 #include "periph/gpio.h"
@@ -34,6 +33,13 @@
 #include "ps.h"
 #include "xtimer.h"
 #include "msg.h"
+
+#include "board.h"
+#include "saul/periph.h"
+#include "timex.h"
+
+#include "coap.h"
+#include "periph/gpio.h"
 
 // own
 #include "pins.h"
@@ -46,12 +52,12 @@
 #endif
 
 // parameters
-#define COAP_BUF_SIZE           (63*4)
-#define COAP_MSG_QUEUE_SIZE     (8U)
+#define COAP_BUF_SIZE           (64)
+#define COAP_MSG_QUEUE_SIZE     (8)
 #define COAP_REPSONSE_LENGTH    (1500)
 
 // coap_thread
-static char coap_thread_stack[THREAD_STACKSIZE_DEFAULT*6];
+static char coap_thread_stack[THREAD_STACKSIZE_DEFAULT];
 static msg_t coap_thread_msg_queue[COAP_MSG_QUEUE_SIZE];
 static char endpoints_response[COAP_REPSONSE_LENGTH] = "";
 
@@ -73,8 +79,6 @@ int seqnum_post = 12345;
 static msg_t rcv_queue[RCV_QUEUE_SIZE];
 static kernel_pid_t vibrate_thread_pid;
 
-// ipv6
-static ipv6_addr_t dst_addr;
 
 //header
 static const coap_header_t req_hdr = {
@@ -90,7 +94,7 @@ int interpretPayload(const uint8_t * const, int, int);
 int returnFromAsciiToUtf(int);
 int findn(int);
 int power(int, unsigned int);
-
+int udp_sendto(uint8_t *buf, size_t len, uint8_t *dst, uint16_t dst_port);
 
 /**
  * @brief handle well-known path request
@@ -290,17 +294,19 @@ const coap_endpoint_t endpoints[] =
 
 void send_coap_put(uint8_t *data, size_t len)
 {
+    puts("send_coap_put");
+
     uint8_t  snd_buf[128];
     size_t   req_pkt_sz;
 
-	 coap_header_t req_hdr = {
-	    .version = 1,
-	    .type = COAP_TYPE_NONCON,
-	    .tkllen = 0,
-	    .code = MAKE_RSPCODE(0, COAP_METHOD_PUT),
-	    .mid = {seqnum_post,22}
-	 };
-	 seqnum_post++;
+    coap_header_t req_hdr = {
+      .version = 1,
+      .type = COAP_TYPE_NONCON,
+      .tkllen = 0,
+      .code = MAKE_RSPCODE(0, COAP_METHOD_PUT),
+      .mid = {seqnum_post,22}
+    };
+    seqnum_post++;
 
     coap_buffer_t payload = {
             .p   = data,
@@ -317,18 +323,86 @@ void send_coap_put(uint8_t *data, size_t len)
 
     req_pkt_sz = sizeof(req_pkt);
 
+    // To something with declared variables as long coap_build is commented out...
+
+    snd_buf[0]++;
+    snd_buf[0]--;
+    req_pkt_sz++;
+    req_pkt_sz--;
+
+    /*
+    * FIXME HERE IS THE PROBLEM!
+    * Note: worked on earlier version of riot-os.
+    * Even though the coap.h header is there,
+    * and the coap_build method is for testing supposed to do nothing (code commented out)
+    * it throws this error when the coap_build method is called:
+          2017-09-19 12:40:37,643 - INFO # Stack pointer corrupted, reset to top of stack
+          2017-09-19 12:40:37,643 - INFO # FSR/FAR:
+          2017-09-19 12:40:37,645 - INFO #  CFSR: 0x00009200
+          2017-09-19 12:40:37,647 - INFO #  HFSR: 0x40000000
+          2017-09-19 12:40:37,648 - INFO #  DFSR: 0x00000000
+          2017-09-19 12:40:37,650 - INFO #  AFSR: 0x00000000
+          2017-09-19 12:40:37,652 - INFO #  BFAR: 0x1fffbfa8
+          2017-09-19 12:40:37,652 - INFO # Misc
+          2017-09-19 12:40:37,654 - INFO # EXC_RET: 0xfffffff1
 
     if (coap_build(snd_buf, &req_pkt_sz, &req_pkt) != 0) {
-            printf("CoAP build failed :(\n");
+            printf("CoAP build failed :\n");
             return;
     }
+    */
 
-	 ipv6_addr_from_str(&dst_addr, "fd9a:620d:c050:0:1ac0:ffee:1ac0:ffee");
+    puts("before send");
 
-    conn_udp_sendto(snd_buf, req_pkt_sz, NULL, 0, &dst_addr, sizeof(dst_addr),
-                    AF_INET6, SPORT, UDP_PORT);
+    /* TODO just sending a udp message when the internal button is clicked,
+    * here instead of data, the coap package should be send.
+    */
+
+	  const char * addr_str = "fd9a:620d:c050:0:1ac0:ffee:1ac0:ffee";
+
+    struct sockaddr_in6 src, dst;
+    size_t data_len = strlen((char*)data);
+    int s;
+    uint16_t port;
+
+    data_len++;
+    data_len--;
+    s = 0;
+    s++;
+    s--;
+    port = UDP_PORT;
+
+    src.sin6_family = AF_INET6;
+    dst.sin6_family = AF_INET6;
+    memset(&src.sin6_addr, 0, sizeof(src.sin6_addr));
+
+    if (inet_pton(AF_INET6, addr_str, &dst.sin6_addr) != 1) {
+        puts("Error: unable to parse destination address");
+        return;
+    }
+
+    dst.sin6_port = htons(port);
+    src.sin6_port = htons(port);
+
+    s = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+    if (s < 0) {
+        puts("error initializing socket");
+        return;
+    }
+
+    if (sendto(s, data, data_len, 0, (struct sockaddr *)&dst, sizeof(dst)) < 0) {
+        puts("could not send");
+    }
+    else {
+        printf("Success: send\n");
+    }
+
+    //usleep(delay);
+
+    close(s);
+
+    puts(addr_str);
 }
-
 
 /**
  * @brief generate well known resource description
@@ -449,6 +523,9 @@ static void *coap_thread(void *arg)
             }
         }
     }
+
+    puts("Running coap thread");
+
     return NULL;
 }
 

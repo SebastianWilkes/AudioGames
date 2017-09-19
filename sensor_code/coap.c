@@ -17,7 +17,7 @@ extern coap_endpoint_t *endpoints;
 #endif
 
 
-#ifdef DEBUG
+//#ifdef DEBUG
 void coap_dump_header(coap_header_t *header)
 {
         printf("Header:\n");
@@ -27,7 +27,7 @@ void coap_dump_header(coap_header_t *header)
         printf("  code     0x%02X\n",     header->code);
         printf("  mid      0x%02X%02X\n", header->mid[0], header->mid[1]);
 }
-#endif
+//#endif
 
 
 #ifdef DEBUG
@@ -315,11 +315,11 @@ int coap_buffer_to_string(char *strbuf, size_t strbuflen, const coap_buffer_t *b
         return 0;
 }
 
-
+/*
 static void coap_option_nibble(uint32_t value, uint8_t *nibble)
 {
         if (value < 13) {
-                *nibble = (0xFF & value);
+              *nibble = (0xFF & value);
         }
         else if (value <= 0xFF + 13) {
                 *nibble = 13;
@@ -328,10 +328,12 @@ static void coap_option_nibble(uint32_t value, uint8_t *nibble)
                 *nibble = 14;
         }
 }
-
+*/
 
 int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
 {
+        puts("entered coap_build");
+        /*
         size_t    opts_len      = 0;
         size_t    i;
         uint8_t  *p;
@@ -362,6 +364,7 @@ int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
 
         // inject options
         p += pkt->header.tkllen;
+
 
         for (i = 0; i < pkt->numopts; i++) {
                 uint32_t optDelta;
@@ -413,7 +416,7 @@ int coap_build(uint8_t *buf, size_t *buflen, const coap_packet_t *pkt)
         else {
                 *buflen = opts_len + 4;
         }
-
+        */
         return 0;
 }
 
